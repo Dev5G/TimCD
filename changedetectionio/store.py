@@ -28,6 +28,7 @@ class ChangeDetectionStore:
         self.__data = {
             'note': "Hello! If you change this file manually, please be sure to restart your changedetection.io instance!",
             'watching': {},
+            'proxies' : [],
             'settings': {
                 'headers': {
                     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36',
@@ -37,7 +38,7 @@ class ChangeDetectionStore:
                 },
                 'requests': {
                     'timeout': 15,  # Default 15 seconds
-                    'minutes_between_check': 3 * 60,  # Default 3 hours
+                    'minutes_between_check': 10800,  # Default 3 hours
                     'workers': 10  # Number of threads, lower is better for slow connections
                 },
                 'application': {
