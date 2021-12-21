@@ -91,7 +91,7 @@ class perform_site_check():
 
 
             fetcher = klass()
-            fetcher.run(url, timeout, request_headers)
+            fetcher.run(url, timeout, request_headers,self.datastore)
             # Fetching complete, now filters
             # @todo move to class / maybe inside of fetcher abstract base?
 

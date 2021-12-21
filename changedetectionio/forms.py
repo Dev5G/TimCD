@@ -1,3 +1,4 @@
+from logging import disable
 from wtforms import (
     Form,
     SelectField,
@@ -293,7 +294,15 @@ class watchForm(commonSettingsForm):
 
 
 class globalSettingsForm(commonSettingsForm):
-
+    proxies = TextAreaField(
+        "Proxy List",
+    )
+    bad_proxies = TextAreaField(
+        "Bad Proxy List", render_kw={'disabled' : True}
+    )
+    use_proxy = BooleanField(
+        "Use proxy from the above list to fetch data?", default=False
+    )
     password = SaltyPasswordField()
     minutes_between_check = html5.IntegerField(
         "Maximum time in seconds until recheck", [validators.NumberRange(min=1)]

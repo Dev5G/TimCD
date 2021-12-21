@@ -50,7 +50,7 @@ class update_worker(threading.Thread):
                     except Exception as e:
                         self.app.logger.error("Exception reached processing watch UUID:%s - %s", uuid, str(e))
                         self.datastore.update_watch(uuid=uuid, update_obj={'last_error': str(e)})
-
+ 
                     else:
                         if update_obj:
                             try:

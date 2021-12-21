@@ -1,6 +1,21 @@
 import requests
+from itertools import cycle
 from lxml.html import fromstring
+from urllib3.exceptions import ProxyError
 
+def create_proxy_list(d):
+    proxies=[]
+    ps =  d.split("\n")
+    for p in ps:
+        p = p.strip()
+        if len(p):
+            proxies.append(p)
+    return proxies
+def create_proxy_output_with_linebreaks(d):
+    proxies=""
+    for p in d:
+        proxies += p+'\n'
+    return proxies
 # use this function if required
 def get_proxies():
     url = "https://free-proxy-list.net/"
@@ -17,17 +32,17 @@ def get_proxies():
     return proxies
 #If you are copy pasting proxy ips, put in the list below
 #proxies = ['121.129.127.209:80', '124.41.215.238:45169', '185.93.3.123:8080', '194.182.64.67:3128', '106.0.38.174:8080', '163.172.175.210:3128', '13.92.196.150:8080']
-proxies = get_proxies()
-proxy_pool = cycle(proxies)
-url = 'https://httpbin.org/ip'
-for i in range(1,11):
-#Get a proxy from the pool
-proxy = next(proxy_pool)
-print("Request #%d"%i)
-try:
-response = requests.get(url,proxies={"http": proxy, "https": proxy})
-print(response.json())
-except:
-#Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work. 
-#We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url 
-print("Skipping. Connnection error")
+# proxies = get_proxies()
+# proxy_pool = cycle(proxies)
+# url = 'https://httpbin.org/ip'
+# for i in range(1,11):
+# #Get a proxy from the pool
+#     proxy = next(proxy_pool)
+#     print("Request #%d"%i)
+#     try:
+#         response = requests.get(url,proxies={"http": proxy, "https": proxy})
+#         print(response.json())
+#     except:
+#         #Most free proxies will often get connection errors. You will have retry the entire request using another proxy to work. 
+#         #We will just skip retries as its beyond the scope of this tutorial and we are only downloading a single url 
+#         print("Skipping. Connnection error")

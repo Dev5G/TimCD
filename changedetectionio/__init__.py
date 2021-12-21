@@ -591,15 +591,31 @@ def changedetection_app(config=None, datastore_o=None):
         from changedetectionio import forms
         from changedetectionio import content_fetcher
 
+
         form = forms.globalSettingsForm(request.form)
 
+        proxies_count = (
+            len(datastore.data["settings"]["application"]["proxies"])
+            if len(datastore.data["settings"]["application"]["proxies"])
+            else 0
+        )
+        bad_proxies_count = (
+            len(datastore.data["settings"]["application"]["bad_proxies"])
+            if len(datastore.data["settings"]["application"]["bad_proxies"])
+            else 0
+        )
         if request.method == "GET":
+            from changedetectionio import proxy
+            form.proxies.data = proxy.create_proxy_output_with_linebreaks(datastore.data["settings"]["application"]["proxies"])
+            form.use_proxy.data = datastore.data["settings"]["application"]["use_proxy"]
+            form.bad_proxies.data = datastore.data["settings"]["application"]["bad_proxies"]
             form.minutes_between_check.data = int(
                 datastore.data["settings"]["requests"]["minutes_between_check"]
             )
             form.notification_urls.data = datastore.data["settings"]["application"][
                 "notification_urls"
             ]
+
             form.extract_title_as_title.data = datastore.data["settings"][
                 "application"
             ]["extract_title_as_title"]
@@ -627,10 +643,9 @@ def changedetection_app(config=None, datastore_o=None):
                 return redirect(url_for("settings_page"))
 
         if request.method == "POST" and form.validate():
-
-            datastore.data["settings"]["application"][
-                "notification_urls"
-            ] = form.notification_urls.data
+            from changedetectionio import proxy
+            datastore.data["settings"]["application"]["proxies"] = proxy.create_proxy_list(form.proxies.data)
+            datastore.data["settings"]["application"]["use_proxy"] = form.use_proxy.data
             datastore.data["settings"]["requests"][
                 "minutes_between_check"
             ] = form.minutes_between_check.data
@@ -685,6 +700,8 @@ def changedetection_app(config=None, datastore_o=None):
         output = render_template(
             "settings.html",
             form=form,
+            proxies_count=proxies_count,
+            bad_proxies_count=bad_proxies_count,
             current_base_url=datastore.data["settings"]["application"]["base_url"],
         )
 
@@ -1104,14 +1121,16 @@ def ticker_thread_check_time_launch_checks():
                 and watch["minutes_between_check"] is not None
             ):
                 # Cast to int just incase
-                max_time = int(watch["minutes_between_check"]) # multiply by *60 to convert to minutes
+                max_time = int(
+                    watch["minutes_between_check"]
+                )  # multiply by *60 to convert to minutes
             else:
                 # Default system wide.
                 max_time = int(
                     copied_datastore.data["settings"]["requests"][
                         "minutes_between_check"
                     ]
-                ) # multiply by *60 to convert to minutes
+                )  # multiply by *60 to convert to minutes
 
             threshold = time.time() - max_time
             logging.info("#timecheck", max_time, "now time", threshold)
