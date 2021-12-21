@@ -126,12 +126,12 @@ class html_requests(Fetcher):
         from itertools import cycle
 
         proxies = datastore.data["settings"]["application"]["proxies"]
-        use_proxy = datastore.data["settings"]["application"]["proxies"]
+        use_proxy = datastore.data["settings"]["application"]["use_proxy"]
         html = None
-        r = None 
+        r = None
         error = None
         if proxies and use_proxy:
-            for i in range(0,len(proxies)) :
+            for i in range(0, len(proxies)):
                 proxy = proxies[i]
                 try:
                     r = requests.get(
@@ -141,6 +141,9 @@ class html_requests(Fetcher):
                         verify=False,
                         proxies={"http": proxy, "https": proxy},
                     )
+                    datastore.data["settings"]["application"]["bad_proxies_counter"][
+                        proxy
+                    ] = 0
                     html = r.text
                     print(f"Proxy currently being used: {proxy} Res: {r}")
                     break
@@ -157,10 +160,17 @@ class html_requests(Fetcher):
                         datastore.data["settings"]["application"][
                             "bad_proxies_counter"
                         ][proxy] = count
-                        if count > 5:
+                        if count > 10:
                             datastore.data["settings"]["application"][
                                 "bad_proxies"
                             ].append(proxy)
+                            datastore.data["settings"]["application"]["proxies"].pop(
+                                datastore.data["settings"]["application"][
+                                    "proxies"
+                                ].index(proxy)
+                            )
+                            if len(datastore.data["settings"]["application"]["proxies"]) < 1:
+                                datastore.data["settings"]["application"]["use_proxy"] = False
                         count = 0
         else:
             r = requests.get(
@@ -172,7 +182,6 @@ class html_requests(Fetcher):
             "bad proxies count: ",
             datastore.data["settings"]["application"]["bad_proxies_counter"],
         )
-        
 
         # @todo test this
         if not r or not html or not len(html):

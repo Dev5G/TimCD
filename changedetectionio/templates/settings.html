@@ -77,9 +77,10 @@
                 <div class="pure-control-group">
                     {{ render_field(form.proxies,rows=5, placeholder="Enter your proxy list") }}
                     <span class="pure-form-message-inline">
-                        <p>Please enter one proxy per line in format (192.11.112.12:21) ie IP:PORT.</p>
-                        <p>Currently you have <b>{{ proxies_count - bad_proxies_count }}</b> proxy out of
-                            {{proxies_count}}
+                        <p>Please enter one proxy per line in format (http://user:pass<b>@</b>192.11.112.12<b>:21</b>)
+                            ie protocal://user:pass@IP:PORT.</p>
+                        <p>Currently you have <b>{{ proxies_count }}</b> proxy out of
+                            {{proxies_count + bad_proxies_count }}
                             working.</p>
                     </span>
                 </div>
