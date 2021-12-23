@@ -144,6 +144,11 @@ class html_requests(Fetcher):
                     datastore.data["settings"]["application"]["bad_proxies_counter"][
                         proxy
                     ] = 0
+                    datastore.data["settings"]["application"]["bad_proxies"].pop(
+                                datastore.data["settings"]["application"][
+                                    "bad_proxies"
+                                ].index(proxy)
+                            )
                     html = r.text
                     print(f"Proxy currently being used: {proxy} Res: {r}")
                     break

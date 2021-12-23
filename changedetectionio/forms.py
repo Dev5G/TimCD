@@ -298,7 +298,7 @@ class globalSettingsForm(commonSettingsForm):
         "Proxy List",
     )
     bad_proxies = TextAreaField(
-        "Bad Proxy List", render_kw={'disabled' : True}
+        "Bad Proxy List", render_kw={'readonly' : True}
     )
     use_proxy = BooleanField(
         "Use proxy from the above list to fetch data?", default=False
